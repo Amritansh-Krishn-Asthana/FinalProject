@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="dashboard-card">
+    <h3 style="margin-bottom: 20px;">Issue Book to Student</h3>
+    
+    <form action="{{ url_for('issue_book') }}" method="POST" class="issue-form-grid">
+        <!-- Left Side: Student & Book Info -->
+        <div class="form-section">
+            <div class="form-group">
+                <label>Select Book from Dataset</label>
+                <input list="books_list" name="book_title" required placeholder="Type to search book..." class="form-control">
+                <datalist id="books_list">
+                    {% for book in books %}
+                        <option value="{{ book.title }}">Author: {{ book.author }} (⭐ {{ book.rating }}) - {{ book.quantity }} available</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            
+            <div class="form-group">
+                <label>College ID</label>
+                <input type="text" name="college_id" required placeholder="e.g. CS202601">
+            </div>
+
+            <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" name="name" required placeholder="e.g. Alex Morgan">
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" required placeholder="e.g. 9876543210">
+            </div>
+
+            <div class="form-group">
+                <label>Branch</label>
+                <select name="branch" required>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Tech">Information Tech</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Mechanical">Mechanical</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Semester</label>
+                <select name="semester" required>
+                    <option value="Sem 1">Sem 1</option>
+                    <option value="Sem 2">Sem 2</option>
+                    <option value="Sem 3">Sem 3</option>
+                    <option value="Sem 4">Sem 4</option>
+                    <option value="Sem 5">Sem 5</option>
+                    <option value="Sem 6">Sem 6</option>
+                    <option value="Sem 7">Sem 7</option>
+                    <option value="Sem 8">Sem 8</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">📸 Snap Photo & Issue Book</button>
+        </div>
+
+        <!-- Right Side: Live Webcam Stream -->
+        <div class="camera-section">
+            <label style="font-weight: 600; font-size: 0.85rem; color: #475569; margin-bottom: 8px; display: block;">Live Camera Stream</label>
+            <div class="camera-frame">
+                <img src="{{ url_for('video_feed') }}" class="stream-img" alt="Webcam Feed">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
