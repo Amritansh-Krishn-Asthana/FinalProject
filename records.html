@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="dashboard-card full-width">
+    <h3>All Issued Student Records</h3>
+
+    {% if records %}
+    <table class="dash-table">
+        <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Student Details</th>
+                <th>Book Title</th>
+                <th>Issued By</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in records %}
+            <tr class="{% if rec.is_overdue %}row-overdue{% endif %}">
+                <td><img src="{{ url_for('static', filename=rec.image_path) }}" class="avatar-img"></td>
+                <td>
+                    <strong>{{ rec.student_name }}</strong><br>
+                    <small>ID: {{ rec.college_id }} | {{ rec.branch }}</small>
+                </td>
+                <td><strong>{{ rec.book_title }}</strong></td>
+                <td><em>{{ rec.issued_by }}</em></td>
+                <td>{{ rec.issued_at }}</td>
+                <td>{{ rec.due_date }}</td>
+                <td>
+                    {% if rec.is_overdue %}
+                        <span class="badge badge-danger">Not Returned</span>
+                    {% else %}
+                        <span class="badge badge-success">Issued</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('return_book', record_id=rec.id) }}" method="POST" onsubmit="return confirm('Return book and restore count in CSV?');">
+                        <button type="submit" class="btn-return">Mark Returned</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="empty-state">No student book issues recorded.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Literary Oasis - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% if session.get('user_id') %}
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo-icon">🌴</span>
+                <div>
+                    <h2>Literary Oasis</h2>
+                    <p>Library Management System</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('dashboard') }}" class="menu-item active">📊 Dashboard</a>
+                <a href="{{ url_for('catalog') }}" class="menu-item">📚 Book Catalog</a>
+                <a href="{{ url_for('issue_page') }}" class="menu-item">➕ Issue Book</a>
+                <a href="{{ url_for('records') }}" class="menu-item">📋 Student Records</a>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">👤</div>
+                <div class="user-info">
+                    <strong>{{ session.get('username') }}</strong>
+                    <span>System Official</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-icon" title="Logout">🚪</a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Top Header with Active Search Bar & Login Time -->
+            <header class="top-header">
+                <div class="search-bar">
+                    🔍 <input type="text" id="topHeaderSearch" placeholder="Search books, students, IDs..." onkeyup="globalSearchDashboard()">
+                </div>
+
+                <div class="header-right">
+                    <div class="login-badge">
+                        🕒 Logged in at: <strong>{{ session.get('login_time') }}</strong>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+        <!-- Auth Layout for Login / Register -->
+        <main class="auth-wrapper">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block auth_content %}{% endblock %}
+        </main>
+    {% endif %}
+
+    <!-- Global Client-Side Search Script -->
+    <script>
+    function globalSearchDashboard() {
+        const input = document.getElementById("topHeaderSearch");
+        if (!input) return;
+
+        const filter = input.value.toLowerCase().trim();
+        const rows = document.querySelectorAll("#dashboardTable .searchable-row");
+        const noResultsMsg = document.getElementById("noResultsMessage");
+        let visibleCount = 0;
+
+        if (rows.length === 0) return;
+
+        rows.forEach(row => {
+            const studentName = row.querySelector(".search-student-name")?.innerText.toLowerCase() || "";
+            const collegeId = row.querySelector(".search-college-id")?.innerText.toLowerCase() || "";
+            const bookTitle = row.querySelector(".search-book-title")?.innerText.toLowerCase() || "";
+
+            if (studentName.includes(filter) || collegeId.includes(filter) || bookTitle.includes(filter)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        if (noResultsMsg) {
+            noResultsMsg.style.display = visibleCount === 0 ? "block" : "none";
+        }
+    }
+    </script>
+</body>
+</html>
